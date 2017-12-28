@@ -16,5 +16,9 @@ build_script:
   - "pip install codecov"
 
 test_script:
-  - py.test -ra --pyargs async_generator --cov=async_generator --cov-config=.coveragerc
-  - codecov
+  - "mkdir empty"
+  - "cd empty"
+  - "python -c \"import os, async_generator; print(os.path.dirname(async_generator.__file__))\""
+  # -u makes sure we get prompt output
+  - "python -u -m pytest -W error -ra ../async_generator -v -s --cov=async_generator --cov-config=../.coveragerc"
+  - "codecov"
