@@ -11,14 +11,10 @@ build_script:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
-  - "pip install ."
   - "pip install -Ur test-requirements.txt"
   - "pip install codecov"
 
 test_script:
-  - "mkdir empty"
-  - "cd empty"
-  - "python -c \"import os, async_generator; print(os.path.dirname(async_generator.__file__))\""
   # -u makes sure we get prompt output
-  - "python -u -m pytest -W error -ra --pyargs async_generator -v -s --cov=async_generator --cov-config=../.coveragerc"
+  - "python -u -m pytest -W error -ra async_generator -v -s --cov=async_generator --cov-config=.coveragerc"
   - "codecov"
