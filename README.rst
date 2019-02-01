@@ -21,15 +21,35 @@
 The async_generator library
 ===========================
 
-Python 3.6 added `async generators
-<https://www.python.org/dev/peps/pep-0525/>`__. (What's an async
-generator? `Check out my 5-minute lightning talk demo from PyCon 2016
-<https://youtu.be/PulzIT8KYLk?t=24m30s>`__.) Python 3.7 adds some more
-tools to make them usable, like ``contextlib.asynccontextmanager``.
+Many Python programmers already know and love `generators
+<https://medium.freecodecamp.org/how-and-why-you-should-use-python-generators-f6fb56650888>`__,
+because they're a super convenient way to write your own iterators
+that you can loop over using ``for``. Python 3.6 added a new thing:
+`async generators <https://www.python.org/dev/peps/pep-0525/>`__. Just
+like regular generators, they're super convenient; the difference is
+that now you loop over them using ``async for``, and this means you
+can use ``await`` inside them. If you're not doing async programming,
+you probably don't care about this at all. But if you *are* doing
+async programming, this is *super awesome*. If you're not convinced,
+check out this `5-minute demo
+<https://youtu.be/PulzIT8KYLk?t=24m30s>`__ (warning: contains
+Nathaniel's first ever attempt to live-code on stage).
 
-This library gives you all that back to Python 3.5.
+But what if you aren't using the latest and greatest Python, but still
+want that async generator goodness? That's where this package comes
+in. It gives you async generators and ``@asynccontextmanager`` on
+Python 3.5+.
 
-For example, this code only works in Python 3.6+:
+**Example 1:** suppose you want to **write your own async generator**.
+The goal is that you can use it like:
+
+.. code-block:: python3
+
+   async for json_obj in load_json_lines(stream_reader):
+       ...
+
+If you're using Python 3.6+, you could implement `load_json_lines`
+using native syntax:
 
 .. code-block:: python3
 
@@ -37,7 +57,8 @@ For example, this code only works in Python 3.6+:
        async for line in stream_reader:
            yield json.loads(line)
 
-But this code does the same thing, and works on Python 3.5+:
+Or, you could use ``async_generator``, and now your code will work on
+Python 3.5+:
 
 .. code-block:: python3
 
@@ -48,7 +69,17 @@ But this code does the same thing, and works on Python 3.5+:
        async for line in stream_reader:
            await yield_(json.loads(line))
 
-Or in Python 3.7, you can write:
+
+**Example 2:** let's say you want to **write your own async context
+manager**. The goal is to be able to write:
+
+.. code-block:: python3
+
+   async with background_server() as ...:
+       ...
+
+If you're using Python 3.7+, you don't need this library; you can
+write something like:
 
 .. code-block:: python3
 
@@ -64,7 +95,7 @@ Or in Python 3.7, you can write:
                # Kill the server when the scope exits
                nursery.cancel_scope.cancel()
 
-This is the same, but back to 3.5:
+This is the same, but works on 3.5+:
 
 .. code-block:: python3
 
@@ -81,8 +112,9 @@ This is the same, but back to 3.5:
                # Kill the server when the scope exits
                nursery.cancel_scope.cancel()
 
-(And if you're on 3.6, you can use ``@asynccontextmanager`` with
-native generators.)
+(And if you're on 3.6, so you have built-in async generators but no
+built-in ``@asynccontextmanager``, then don't worry, you can use
+``async_generator.asynccontextmanager`` on native async generators.)
 
 
 Let's do this
